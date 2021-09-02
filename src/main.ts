@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import { Board } from './model/Board';
+import { Board } from './model/board';
 
 (async () => {
   const prompt = inquirer.createPromptModule();
@@ -15,9 +15,9 @@ import { Board } from './model/Board';
       ],
     });
 
-    const board = new Board(answer.boardSize);
+    const board = new Board(5);
     console.log(board.state);
   } catch (e) {
-    console.log(e.message);
+    console.error(e.message);
   }
 })();
