@@ -5,7 +5,9 @@ export interface Coodinate {
   y: number;
 }
 
+
 export interface IBoard {
+  size: number;
   state: IStone[][];
   putStone: (coodinate: Coodinate, state: StoneState) => void;
   getStone: (coodinate: Coodinate) => IStone;
@@ -14,12 +16,18 @@ export interface IBoard {
 
 export class Board {
   private _state: IStone[][] = [];
+  private _size?: number;
+
+  get size () {
+    return this._size ?? 0
+  }
 
   public init = (size: number) => {
     if (!this.isBoardSizeValid(size)) {
       throw new Error('サイズは4以上8以下の偶数です');
     }
 
+    this._size = size;
     const state: IStone[][] = [];
     for (let y = 0; y < size; y++) {
       const row: IStone[] = [];
