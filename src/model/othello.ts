@@ -57,16 +57,30 @@ export class Othello {
     this.turn = this.turn === this.player1 ? this.player2 : this.player1;
 
     // 全部のマスを調べて置ける場所があるかどうか調べる
-    all:
     for (let i = 0; i < this.board.size; i++) {
       for (let j = 0; j < this.board.size; j++) {
         const flipableStones = this.getFlipableStones({ y: i, x: j });
-        console.log(flipableStones);
+
+        // 置く場所があればターンを実行して終了
         if (flipableStones.length > 0) {
-          break all;
+          this.pass = 0;
+          this.turn.turn();
+          return;
         }
       }
     }
+
+    // 置く場所がない場合
+    this.pass++;
+
+    // 2連続パスはゲーム終了
+    if (this.pass === 2) {
+      this.end();
+    }
+
+    console.log(`${this.turn.name}は置けないのでパス`);
+
+    this.changeTurn();
   };
 
   // 全方向を見て裏返せる石を探す
@@ -115,5 +129,9 @@ export class Othello {
     }
 
     return coodinates;
+  };
+
+  private end = () => {
+    console.log('おわり');
   };
 }

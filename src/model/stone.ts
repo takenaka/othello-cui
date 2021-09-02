@@ -1,4 +1,4 @@
-import { PlayerColor } from "./player";
+import { PlayerColor } from './player';
 
 export type StoneState = PlayerColor | null;
 

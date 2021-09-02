@@ -5,7 +5,6 @@ export interface Coodinate {
   y: number;
 }
 
-
 export interface IBoard {
   size: number;
   state: IStone[][];
@@ -18,8 +17,8 @@ export class Board {
   private _state: IStone[][] = [];
   private _size?: number;
 
-  get size () {
-    return this._size ?? 0
+  get size() {
+    return this._size ?? 0;
   }
 
   public init = (size: number) => {

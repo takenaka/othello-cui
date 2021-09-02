@@ -16,6 +16,6 @@ export class Player implements IPlayer {
   }
 
   public turn = () => {
-    return
-  }
+    return;
+  };
 }
