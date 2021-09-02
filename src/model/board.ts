@@ -1,9 +1,21 @@
-import { IStone, Stone } from './stone';
+import { IStone, Stone, StoneState } from './stone';
+
+export interface Coodinate {
+  x: number;
+  y: number;
+}
+
+export interface IBoard {
+  state: IStone[][];
+  putStone: (coodinate: Coodinate, state: StoneState) => void;
+  getStone: (coodinate: Coodinate) => IStone;
+  init: (number: number) => void;
+}
 
 export class Board {
   private _state: IStone[][] = [];
 
-  constructor(size: number) {
+  public init = (size: number) => {
     if (!this.isBoardSizeValid(size)) {
       throw new Error('サイズは4以上8以下の偶数です');
     }
@@ -30,7 +42,7 @@ export class Board {
     }
 
     this._state = state;
-  }
+  };
 
   get state() {
     return this._state;
@@ -42,5 +54,29 @@ export class Board {
     }
 
     return false;
+  };
+
+  private existStone = (coodinate: Coodinate) => {
+    if (!this._state || !this._state[coodinate.y] || !this._state[coodinate.y][coodinate.x]) {
+      return false;
+    }
+
+    return true;
+  };
+
+  public putStone = (coodinate: Coodinate, state: StoneState) => {
+    if (!this.existStone(coodinate)) {
+      throw new Error('置けないよ');
+    }
+
+    this._state[coodinate.y][coodinate.x].state = state;
+  };
+
+  public getStone = (coodinate: Coodinate) => {
+    if (!this.existStone(coodinate)) {
+      throw new Error('ないよ');
+    }
+
+    return this._state[coodinate.y][coodinate.x];
   };
 }

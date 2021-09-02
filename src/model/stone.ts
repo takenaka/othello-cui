@@ -1,4 +1,6 @@
-export type StoneState = 'white' | 'black' | null;
+import { PlayerColor } from "./player";
+
+export type StoneState = PlayerColor | null;
 
 export interface IStone {
   state: StoneState;

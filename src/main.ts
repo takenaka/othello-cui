@@ -1,22 +1,16 @@
 import inquirer from 'inquirer';
 import { Board } from './model/board';
+import { Othello } from './model/othello';
+import { Player } from './model/player';
 
 (async () => {
-  const prompt = inquirer.createPromptModule();
   try {
-    const answer = await prompt({
-      message: 'ボードのサイズを選択してください',
-      name: 'boardSize',
-      type: 'list',
-      choices: [
-        { name: '4 x 4', value: 4 },
-        { name: '6 x 6', value: 6 },
-        { name: '8 x 8', value: 8 },
-      ],
-    });
+    const board = new Board();
+    const player1 = new Player('black', '黒');
+    const player2 = new Player('white', '白');
 
-    const board = new Board(5);
-    console.log(board.state);
+    const othello = new Othello(board, player1, player2);
+    othello.init();
   } catch (e) {
     console.error(e.message);
   }
