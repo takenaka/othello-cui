@@ -9,6 +9,7 @@ export interface IBoard {
   size: number;
   state: IStone[][];
   putStone: (coodinate: Coodinate, state: StoneState) => void;
+  canPutStone: (coodinate: Coodinate) => boolean;
   getStone: (coodinate: Coodinate) => IStone;
   init: (number: number) => void;
 }
@@ -63,7 +64,19 @@ export class Board {
     return false;
   };
 
-  private existStone = (coodinate: Coodinate) => {
+  public canPutStone = (coodinate: Coodinate) => {
+    if (
+      this._state[coodinate.y][coodinate.x].state === 'black' ||
+      this._state[coodinate.y][coodinate.x].state === 'white'
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private existSpace = (coodinate: Coodinate) => {
+    // 範囲外
     if (!this._state || !this._state[coodinate.y] || !this._state[coodinate.y][coodinate.x]) {
       return false;
     }
@@ -72,7 +85,7 @@ export class Board {
   };
 
   public putStone = (coodinate: Coodinate, state: StoneState) => {
-    if (!this.existStone(coodinate)) {
+    if (!this.existSpace(coodinate) || !this.canPutStone(coodinate)) {
       throw new Error('置けないよ');
     }
 
@@ -80,7 +93,7 @@ export class Board {
   };
 
   public getStone = (coodinate: Coodinate) => {
-    if (!this.existStone(coodinate)) {
+    if (!this.existSpace(coodinate)) {
       throw new Error('ないよ');
     }
 

@@ -4,6 +4,7 @@ export type StoneState = PlayerColor | null;
 
 export interface IStone {
   state: StoneState;
+  flip: () => void;
 }
 
 export class Stone implements IStone {
@@ -16,4 +17,8 @@ export class Stone implements IStone {
   set state(c: StoneState) {
     this._state = c;
   }
+
+  public flip = () => {
+    this._state = this._state === 'black' ? 'white' : 'black';
+  };
 }

@@ -3,7 +3,6 @@ export type PlayerColor = 'white' | 'black';
 export interface IPlayer {
   color: PlayerColor;
   name: string;
-  turn: () => void;
 }
 
 export class Player implements IPlayer {
@@ -14,8 +13,4 @@ export class Player implements IPlayer {
     this.color = color;
     this.name = name;
   }
-
-  public turn = () => {
-    return;
-  };
 }
