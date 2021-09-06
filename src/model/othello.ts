@@ -1,7 +1,6 @@
-import { prompt } from '../utils/prompt';
 import { Coodinate, IBoard } from './board';
 import { IIO } from './io';
-import { IPlayer, PlayerColor } from './player';
+import { IPlayer } from './player';
 
 export type Direction = 1 | -1 | 0;
 

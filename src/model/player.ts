@@ -1,15 +1,15 @@
-export type PlayerColor = 'white' | 'black';
+import { StoneColor } from "./stone";
 
 export interface IPlayer {
-  color: PlayerColor;
+  color: StoneColor;
   name: string;
 }
 
 export class Player implements IPlayer {
-  readonly color: PlayerColor;
+  readonly color: StoneColor;
   readonly name: string;
 
-  constructor(color: PlayerColor, name: string) {
+  constructor(color: StoneColor, name: string) {
     this.color = color;
     this.name = name;
   }
