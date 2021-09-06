@@ -9,6 +9,17 @@ export interface XYDirection {
   x: Direction;
 }
 
+export const directions: XYDirection[] = [
+  { y: -1, x: 0 },
+  { y: -1, x: 1 },
+  { y: 0, x: 1 },
+  { y: 1, x: 1 },
+  { y: 1, x: 0 },
+  { y: 1, x: -1 },
+  { y: 0, x: -1 },
+  { y: -1, x: -1 },
+];
+
 export class Othello {
   private readonly board: IBoard;
   private readonly player1: IPlayer;
@@ -17,16 +28,6 @@ export class Othello {
   private turnPlayer: IPlayer;
   private pass = 0;
   private countStone = 0;
-  private directions: XYDirection[] = [
-    { y: -1, x: 0 },
-    { y: -1, x: 1 },
-    { y: 0, x: 1 },
-    { y: 1, x: 1 },
-    { y: 1, x: 0 },
-    { y: 1, x: -1 },
-    { y: 0, x: -1 },
-    { y: -1, x: -1 },
-  ];
 
   constructor(board: IBoard, player1: IPlayer, player2: IPlayer, io: IIO) {
     this.board = board;
@@ -120,7 +121,7 @@ export class Othello {
   private getFlipableStonesCoodinate = (coodinate: Coodinate) => {
     let coodinates: Coodinate[] = [];
 
-    this.directions.forEach(direction => {
+    directions.forEach(direction => {
       const value = this.getFlipableStonesCoodinateLookAtSingleDirection(coodinate, direction);
       coodinates = coodinates.concat(value);
     });
