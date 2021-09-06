@@ -1,5 +1,5 @@
 # othello-cui
-TypeScript製コマンドで遊べるオセロゲーム
+TypeScript製のコマンドで遊べるオセロゲーム
 
 require node >=14
 
