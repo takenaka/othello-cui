@@ -15,7 +15,6 @@ export class Othello {
   private readonly player2: IPlayer;
   private readonly io: IIO;
   private turnPlayer: IPlayer;
-  private turn = 0;
   private pass = 0;
   private countStone = 0;
   private directions: XYDirection[] = [
@@ -47,7 +46,7 @@ export class Othello {
 
       // 2連続パスか盤面が一杯になるまで
       while (this.pass < 2 && this.countStone < this.board.size ** 2) {
-        await this.changeTurn();
+        await this.turn();
       }
 
       this.end();
@@ -73,15 +72,13 @@ export class Othello {
     this.countStone = countWhiteStone + countBlackStone;
   };
 
-  private changeTurn = async () => {
-    if (this.turn !== 0) {
-      this.turnPlayer = this.turnPlayer === this.player1 ? this.player2 : this.player1;
-    }
+  private changeTurn = () => {
+    this.turnPlayer = this.turnPlayer === this.player1 ? this.player2 : this.player1;
+  };
 
+  private turn = async () => {
     this.io.showBoard(this.board);
-
     this.io.message(`${this.turnPlayer.name}の番`);
-    this.turn++;
 
     // 全部のマスを調べて置ける場所があるかどうか調べる
     for (let i = 0; i < this.board.size; i++) {
@@ -106,6 +103,7 @@ export class Othello {
               console.log(`\n${e.message}\n`);
             }
           }
+          this.changeTurn();
           return;
         }
       }
@@ -115,6 +113,7 @@ export class Othello {
     this.pass++;
 
     this.io.message(`${this.turnPlayer.name}は置けないのでパス`);
+    this.changeTurn();
   };
 
   // 全方向を見て裏返せる石を探す
