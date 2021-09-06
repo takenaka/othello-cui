@@ -1,4 +1,4 @@
-import { prompt } from '../utils/prompt';
+import { prompt } from '../util/prompt';
 import { Coodinate, IBoard } from './board';
 
 export interface IIO {
