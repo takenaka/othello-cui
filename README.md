@@ -1,10 +1,10 @@
-# othello-cui
+# Othello-CUI
 TypeScript製のコマンドで遊べるオセロゲーム
 
 require node >=14
 
-## install & build
+## Install & Build
 `npm install && npm run build`
 
-## play
+## Play
 `node dist/main.js`
