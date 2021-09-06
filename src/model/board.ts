@@ -11,6 +11,7 @@ export interface IBoard {
   putStone: (coodinate: Coodinate, state: StoneState) => void;
   canPutStone: (coodinate: Coodinate) => boolean;
   getStone: (coodinate: Coodinate) => IStone;
+  countStone: (state: StoneState) => number;
   init: (number: number) => void;
 }
 
@@ -65,15 +66,13 @@ export class Board {
   };
 
   public canPutStone = (coodinate: Coodinate) => {
-    if (
-      this._state[coodinate.y][coodinate.x].state === 'black' ||
-      this._state[coodinate.y][coodinate.x].state === 'white'
-    ) {
+    const state = this._state[coodinate.y][coodinate.x].state;
+    if (state === 'black' || state === 'white') {
       return false;
     }
 
     return true;
-  }
+  };
 
   private existSpace = (coodinate: Coodinate) => {
     // 範囲外
@@ -98,5 +97,18 @@ export class Board {
     }
 
     return this._state[coodinate.y][coodinate.x];
+  };
+
+  public countStone = (state: StoneState) => {
+    let count = 0;
+    this.state.forEach(y => {
+      y.forEach(stone => {
+        if (stone.state === state) {
+          count++;
+        }
+      });
+    });
+
+    return count;
   };
 }

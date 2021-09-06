@@ -5,7 +5,7 @@ import { IPlayer, PlayerColor } from './player';
 
 export type Direction = 1 | -1 | 0;
 
-export interface DirectionXY {
+export interface XYDirection {
   y: Direction;
   x: Direction;
 }
@@ -16,9 +16,10 @@ export class Othello {
   private readonly player2: IPlayer;
   private readonly io: IIO;
   private turnPlayer: IPlayer;
-  private putCount = 0;
+  private turn = 0;
   private pass = 0;
-  private directions: DirectionXY[] = [
+  private countStone = 0;
+  private directions: XYDirection[] = [
     { y: -1, x: 0 },
     { y: -1, x: 1 },
     { y: 0, x: 1 },
@@ -45,8 +46,8 @@ export class Othello {
 
       this.io.message(`先行は${this.turnPlayer.name}です`);
 
-      while (this.pass < 2 || this.putCount < this.board.size ** 2) {
-        console.log(this.putCount, this.board.size ** 2);
+      // 2連続パスか盤面が一杯になるまで
+      while (this.pass < 2 && this.countStone < this.board.size ** 2) {
         await this.changeTurn();
       }
 
@@ -67,16 +68,21 @@ export class Othello {
     flipableStones.forEach(flipableStone => {
       this.board.getStone(flipableStone).flip();
     });
+
+    const countWhiteStone = this.board.countStone('white');
+    const countBlackStone = this.board.countStone('black');
+    this.countStone = countWhiteStone + countBlackStone;
   };
 
   private changeTurn = async () => {
-    if (this.putCount !== 0) {
+    if (this.turn !== 0) {
       this.turnPlayer = this.turnPlayer === this.player1 ? this.player2 : this.player1;
     }
 
     this.io.showBoard(this.board);
 
     this.io.message(`${this.turnPlayer.name}の番`);
+    this.turn++;
 
     // 全部のマスを調べて置ける場所があるかどうか調べる
     for (let i = 0; i < this.board.size; i++) {
@@ -90,9 +96,17 @@ export class Othello {
         // 置く場所があればターンを実行して終了
         if (flipableStones.length > 0) {
           this.pass = 0;
-          const coodinate = await this.positionQuestion();
-          this.putStone(coodinate);
-          this.putCount++;
+
+          // 置けるまで聞く
+          while (true) {
+            const coodinate = await this.io.selectXYCoodinate(this.board);
+            try {
+              this.putStone(coodinate);
+              break;
+            } catch (e) {
+              console.log(`\n${e.message}\n`);
+            }
+          }
           return;
         }
       }
@@ -117,7 +131,7 @@ export class Othello {
   };
 
   // 一方向を見て裏返せる石を探す
-  private getFlipableStonesCoodinateLookAtSingleDirection = (cordinate: Coodinate, direction: DirectionXY) => {
+  private getFlipableStonesCoodinateLookAtSingleDirection = (cordinate: Coodinate, direction: XYDirection) => {
     const coodinates: Coodinate[] = [];
 
     for (let i = 1; i <= this.board.size; i++) {
@@ -153,43 +167,20 @@ export class Othello {
   };
 
   private end = () => {
-    const player1Count = this.getStoneCount(this.player1.color);
-    const player2Count = this.getStoneCount(this.player2.color);
+    this.io.showBoard(this.board);
 
-    this.io.message('おわり');
+    const player1Count = this.board.countStone(this.player1.color);
+    const player2Count = this.board.countStone(this.player2.color);
 
     this.io.message(`${this.player1.name}: ${player1Count}`);
     this.io.message(`${this.player2.name}: ${player2Count}`);
 
-    let winner = player1Count > player2Count? this.player1.name: this.player2.name;
+    let winner = player1Count > player2Count ? this.player1.name : this.player2.name;
     if (player1Count === player2Count) {
-      winner = 'なし'
+      winner = 'なし';
     }
 
-    this.io.message(`勝者は: ${winner}`)
-  };
-
-  private getStoneCount = (color: PlayerColor) => {
-    let count = 0;
-    this.board.state.forEach(y => {
-      y.forEach(stone => {
-        if (stone.state === color) {
-          count++;
-        }
-      })
-    })
-
-    return count;
-  }
-
-  private positionQuestion = async (): Promise<Coodinate> => {
-    const choices: { name: string; value: number }[] = [];
-    for (let i = 0; i < this.board.size; i++) {
-      choices.push({ name: (i + 1).toString(), value: i });
-    }
-
-    const x = await this.io.selectCoodinate('x', choices);
-    const y = await this.io.selectCoodinate('y', choices);
-    return { y, x };
+    this.io.message(`勝者は: ${winner}`);
+    this.io.message('\nおわり');
   };
 }

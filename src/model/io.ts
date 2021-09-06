@@ -1,10 +1,10 @@
 import { prompt } from '../utils/prompt';
-import { IBoard } from './board';
+import { Coodinate, IBoard } from './board';
 
 export interface IIO {
   message: (message: any) => void;
   selectBoardSize: () => Promise<number>;
-  selectCoodinate: (direction: 'y' | 'x', choices: { name: string; value: number }[]) => Promise<number>;
+  selectXYCoodinate: (board: IBoard) => Promise<Coodinate>;
   showBoard: (board: IBoard) => void;
 }
 
@@ -28,7 +28,21 @@ export class IO {
     return answer.boardSize as number;
   };
 
-  public static selectCoodinate = async (direction: 'y' | 'x', choices: { name: string; value: number }[]) => {
+  public static selectXYCoodinate = async (board: IBoard): Promise<Coodinate> => {
+    const choicesNumber: { name: string; value: number }[] = [];
+    const choicesAlphabet: { name: string; value: number }[] = [];
+    const char = 'A'.charCodeAt(0);
+    for (let i = 0; i < board.size; i++) {
+      choicesNumber.push({ name: (i + 1).toString(), value: i });
+      choicesAlphabet.push({ name: String.fromCharCode(char + i), value: i });
+    }
+
+    const y = await IO.selectCoodinate('y', choicesNumber);
+    const x = await IO.selectCoodinate('x', choicesAlphabet);
+    return { y, x };
+  };
+
+  private static selectCoodinate = async (direction: 'y' | 'x', choices: { name: string; value: number }[]) => {
     const answer = await prompt({
       message: `${direction}座標を選んでください`,
       name: direction,
@@ -43,8 +57,9 @@ export class IO {
     const message = [];
 
     let firstLine = [' '];
+    const char = 'A'.charCodeAt(0);
     for (let i = 0; i < board.size; i++) {
-      firstLine.push((i + 1).toString());
+      firstLine.push(String.fromCharCode(char + i));
     }
     message.push(firstLine);
 
@@ -64,7 +79,7 @@ export class IO {
     let messageString = '\n';
     message.forEach(line => {
       messageString += line.join(' ');
-      messageString += '\n'
+      messageString += '\n';
     });
 
     console.log(messageString);
