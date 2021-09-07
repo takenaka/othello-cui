@@ -1,4 +1,4 @@
-import { IStone, Stone, StoneState } from './stone';
+import { IStone, IStoneFactory, StoneState } from './stone';
 
 export interface Coodinate {
   x: number;
@@ -12,7 +12,7 @@ export interface IBoard {
   canPutStone: (coodinate: Coodinate) => boolean;
   getStone: (coodinate: Coodinate) => IStone;
   countStone: (state: StoneState) => number;
-  init: (number: number) => void;
+  init: (number: number, stoneFactory: IStoneFactory) => void;
 }
 
 export class Board {
@@ -23,7 +23,7 @@ export class Board {
     return this._size ?? 0;
   }
 
-  public init = (size: number) => {
+  public init = (size: number, stoneFactory: IStoneFactory) => {
     if (!this.isBoardSizeValid(size)) {
       throw new Error('サイズは4以上8以下の偶数です');
     }
@@ -33,7 +33,7 @@ export class Board {
     for (let y = 0; y < size; y++) {
       const row: IStone[] = [];
       for (let x = 0; x < size; x++) {
-        row.push(new Stone());
+        row.push(stoneFactory.factory());
       }
       state.push(row);
     }

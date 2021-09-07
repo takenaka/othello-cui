@@ -1,6 +1,7 @@
 import { Coodinate, IBoard } from './board';
 import { IIO } from './io';
 import { IPlayer } from './player';
+import { IStoneFactory } from './stone';
 
 export type Direction = 1 | -1 | 0;
 
@@ -22,6 +23,7 @@ export const directions: XYDirection[] = [
 
 export class Othello {
   private readonly board: IBoard;
+  private readonly stoneFactory: IStoneFactory;
   private readonly player1: IPlayer;
   private readonly player2: IPlayer;
   private readonly io: IIO;
@@ -29,8 +31,9 @@ export class Othello {
   private pass = 0;
   private countStone = 0;
 
-  constructor(board: IBoard, player1: IPlayer, player2: IPlayer, io: IIO) {
+  constructor(board: IBoard, stoneFactory: IStoneFactory, player1: IPlayer, player2: IPlayer, io: IIO) {
     this.board = board;
+    this.stoneFactory = stoneFactory;
     this.player1 = player1;
     this.player2 = player2;
     this.io = io;
@@ -41,7 +44,7 @@ export class Othello {
   public init = async () => {
     try {
       const answer = await this.io.selectBoardSize();
-      this.board.init(answer);
+      this.board.init(answer, this.stoneFactory);
 
       this.io.message(`先行は${this.turnPlayer.name}です`);
 

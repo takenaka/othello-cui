@@ -22,3 +22,13 @@ export class Stone implements IStone {
     this._state = this._state === 'black' ? 'white' : 'black';
   };
 }
+
+export interface IStoneFactory {
+  factory: () => IStone;
+}
+
+export const StoneFactory: IStoneFactory = class StoneFactory {
+  public static factory = () => {
+    return new Stone();
+  };
+};

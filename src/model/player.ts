@@ -1,4 +1,4 @@
-import { StoneColor } from "./stone";
+import { StoneColor } from './stone';
 
 export interface IPlayer {
   color: StoneColor;

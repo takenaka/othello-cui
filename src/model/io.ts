@@ -8,7 +8,7 @@ export interface IIO {
   showBoard: (board: IBoard) => void;
 }
 
-export class IO {
+export const IO: IIO = class IO {
   public static message = (message: any) => {
     console.log(message);
   };
@@ -84,4 +84,4 @@ export class IO {
 
     console.log(messageString);
   };
-}
+};
