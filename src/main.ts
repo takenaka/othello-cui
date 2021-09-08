@@ -2,7 +2,7 @@ import { Board } from './model/board';
 import { IO } from './model/io';
 import { Othello } from './model/othello';
 import { Player } from './model/player';
-import { Stone, StoneFactory } from './model/stone';
+import { StoneFactory } from './model/stone';
 
 (async () => {
   try {
