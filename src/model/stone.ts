@@ -19,6 +19,10 @@ export class Stone implements IStone {
   }
 
   public flip = () => {
+    if (this._state === null) {
+      throw new Error('ひっくり返せないよ')
+    }
+
     this._state = this._state === 'black' ? 'white' : 'black';
   };
 }
