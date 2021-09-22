@@ -8,48 +8,34 @@ export interface Coodinate {
 export interface IBoard {
   size: number;
   state: Array<IStone | null>[];
-  putStone: (coodinate: Coodinate, state: StoneState) => void;
+  putStone: (coodinate: Coodinate, stone: IStone) => void;
   canPutStone: (coodinate: Coodinate) => boolean;
   getStone: (coodinate: Coodinate) => IStone | null;
   countStone: (state: StoneState) => number;
-  init: (number: number, stoneFactory: IStoneFactory) => void;
+  init: (number: number) => void;
 }
 
 export class Board implements IBoard {
   private _state: Array<IStone | null>[] = [];
   private _size?: number;
-  private stoneFactory?: IStoneFactory;
 
   get size() {
     return this._size ?? 0;
   }
 
-  public init = (size: number, stoneFactory: IStoneFactory) => {
+  public init = (size: number) => {
     if (!this.isBoardSizeValid(size)) {
       throw new Error('サイズは4以上8以下の偶数です');
     }
 
     this._size = size;
-    this.stoneFactory = stoneFactory;
-    const state: Array<IStone | null>[] = [];
+    const state: null[][] = [];
     for (let y = 0; y < size; y++) {
-      const row: Array<IStone | null> = [];
+      const row: null[] = [];
       for (let x = 0; x < size; x++) {
         row.push(null);
       }
       state.push(row);
-    }
-
-    const base = size / 2 - 1;
-
-    for (let y = 0; y < 2; y++) {
-      for (let x = 0; x < 2; x++) {
-        if (x === y) {
-          state[y + base][x + base] = this.stoneFactory.factory('black');
-        } else {
-          state[y + base][x + base] = this.stoneFactory.factory('white');
-        }
-      }
     }
 
     this._state = state;
@@ -80,15 +66,12 @@ export class Board implements IBoard {
     return true;
   };
 
-  public putStone = (coodinate: Coodinate, state: StoneState) => {
-    if (!this.stoneFactory) {
-      throw new Error('石が作れないよ');
-    }
+  public putStone = (coodinate: Coodinate, stone: IStone) => {
     if (!this.existSpace(coodinate) || !this.canPutStone(coodinate)) {
       throw new Error('置けないよ');
     }
 
-    this._state[coodinate.y][coodinate.x] = this.stoneFactory.factory(state);
+    this._state[coodinate.y][coodinate.x] = stone;
   };
 
   public getStone = (coodinate: Coodinate) => {

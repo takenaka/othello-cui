@@ -44,7 +44,19 @@ export class Othello {
   public init = async () => {
     try {
       const answer = await this.io.selectBoardSize();
-      this.board.init(answer, this.stoneFactory);
+      this.board.init(answer);
+
+      const base = answer / 2 - 1;
+
+      for (let y = 0; y < 2; y++) {
+        for (let x = 0; x < 2; x++) {
+          if (x === y) {
+            this.board.putStone({ y: y + base, x: x + base }, this.stoneFactory.factory('black'));
+          } else {
+            this.board.putStone({ y: y + base, x: x + base }, this.stoneFactory.factory('white'));
+          }
+        }
+      }
 
       this.io.message(`先行は${this.turnPlayer.name}です`);
 
@@ -67,7 +79,7 @@ export class Othello {
       throw new Error('ひっくり返せる石がないよ');
     }
 
-    this.board.putStone(coodinate, this.turnPlayer.color);
+    this.board.putStone(coodinate, this.stoneFactory.factory(this.turnPlayer.color));
     flipableStones.forEach(flipableStone => {
       const stone = this.board.getStone(flipableStone);
       stone?.flip();
