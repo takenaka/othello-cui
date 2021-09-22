@@ -1,6 +1,4 @@
-export type StoneColor = 'white' | 'black';
-
-export type StoneState = StoneColor | null;
+export type StoneState = 'white' | 'black';
 
 export interface IStone {
   state: StoneState;
@@ -8,7 +6,11 @@ export interface IStone {
 }
 
 export class Stone implements IStone {
-  private _state: StoneState = null;
+  private _state: StoneState;
+
+  constructor(value: StoneState) {
+    this._state = value;
+  }
 
   get state() {
     return this._state;
@@ -19,20 +21,16 @@ export class Stone implements IStone {
   }
 
   public flip = () => {
-    if (this._state === null) {
-      throw new Error('ひっくり返せないよ')
-    }
-
     this._state = this._state === 'black' ? 'white' : 'black';
   };
 }
 
 export interface IStoneFactory {
-  factory: () => IStone;
+  factory: (value: StoneState) => IStone;
 }
 
 export const StoneFactory: IStoneFactory = class StoneFactory {
-  public static factory = () => {
-    return new Stone();
+  public static factory = (value: StoneState) => {
+    return new Stone(value);
   };
 };

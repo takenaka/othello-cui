@@ -55,7 +55,8 @@ export class Othello {
 
       this.end();
     } catch (e) {
-      this.io.message(e.message);
+      const _e = e as Error;
+      this.io.message(_e.message);
     }
   };
 
@@ -68,7 +69,8 @@ export class Othello {
 
     this.board.putStone(coodinate, this.turnPlayer.color);
     flipableStones.forEach(flipableStone => {
-      this.board.getStone(flipableStone).flip();
+      const stone = this.board.getStone(flipableStone);
+      stone?.flip();
     });
 
     const countWhiteStone = this.board.countStone('white');
@@ -104,7 +106,8 @@ export class Othello {
               this.putStone(coodinate);
               break;
             } catch (e) {
-              console.log(`\n${e.message}\n`);
+              const _e = e as Error;
+              console.log(`\n${_e.message}\n`);
             }
           }
           this.changeTurn();
@@ -149,7 +152,7 @@ export class Othello {
       const boardMapCoordinate = this.board.getStone({ y: r, x: c });
 
       //空マスなら空の配列を返す。
-      if (boardMapCoordinate.state === null) {
+      if (!boardMapCoordinate) {
         return [];
       }
 

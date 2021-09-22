@@ -7,17 +7,18 @@ export interface Coodinate {
 
 export interface IBoard {
   size: number;
-  state: IStone[][];
+  state: Array<IStone | null>[];
   putStone: (coodinate: Coodinate, state: StoneState) => void;
   canPutStone: (coodinate: Coodinate) => boolean;
-  getStone: (coodinate: Coodinate) => IStone;
+  getStone: (coodinate: Coodinate) => IStone | null;
   countStone: (state: StoneState) => number;
   init: (number: number, stoneFactory: IStoneFactory) => void;
 }
 
-export class Board {
-  private _state: IStone[][] = [];
+export class Board implements IBoard {
+  private _state: Array<IStone | null>[] = [];
   private _size?: number;
+  private stoneFactory?: IStoneFactory;
 
   get size() {
     return this._size ?? 0;
@@ -29,11 +30,12 @@ export class Board {
     }
 
     this._size = size;
-    const state: IStone[][] = [];
+    this.stoneFactory = stoneFactory;
+    const state: Array<IStone | null>[] = [];
     for (let y = 0; y < size; y++) {
-      const row: IStone[] = [];
+      const row: Array<IStone | null> = [];
       for (let x = 0; x < size; x++) {
-        row.push(stoneFactory.factory());
+        row.push(null);
       }
       state.push(row);
     }
@@ -43,9 +45,9 @@ export class Board {
     for (let y = 0; y < 2; y++) {
       for (let x = 0; x < 2; x++) {
         if (x === y) {
-          state[y + base][x + base].state = 'black';
+          state[y + base][x + base] = this.stoneFactory.factory('black');
         } else {
-          state[y + base][x + base].state = 'white';
+          state[y + base][x + base] = this.stoneFactory.factory('white');
         }
       }
     }
@@ -66,17 +68,12 @@ export class Board {
   };
 
   public canPutStone = (coodinate: Coodinate) => {
-    const state = this._state[coodinate.y][coodinate.x].state;
-    if (state === 'black' || state === 'white') {
-      return false;
-    }
-
-    return true;
+    return this.existSpace(coodinate) && !Boolean(this._state[coodinate.y][coodinate.x]);
   };
 
   private existSpace = (coodinate: Coodinate) => {
     // 範囲外
-    if (!this._state || !this._state[coodinate.y] || !this._state[coodinate.y][coodinate.x]) {
+    if (this._state[coodinate.y] === undefined || this._state[coodinate.y][coodinate.x] === undefined) {
       return false;
     }
 
@@ -84,16 +81,19 @@ export class Board {
   };
 
   public putStone = (coodinate: Coodinate, state: StoneState) => {
+    if (!this.stoneFactory) {
+      throw new Error('石が作れないよ');
+    }
     if (!this.existSpace(coodinate) || !this.canPutStone(coodinate)) {
       throw new Error('置けないよ');
     }
 
-    this._state[coodinate.y][coodinate.x].state = state;
+    this._state[coodinate.y][coodinate.x] = this.stoneFactory.factory(state);
   };
 
   public getStone = (coodinate: Coodinate) => {
     if (!this.existSpace(coodinate)) {
-      throw new Error('ないよ');
+      throw new Error('範囲外だよ');
     }
 
     return this._state[coodinate.y][coodinate.x];
@@ -103,7 +103,7 @@ export class Board {
     let count = 0;
     this.state.forEach(y => {
       y.forEach(stone => {
-        if (stone.state === state) {
+        if (stone && stone.state === state) {
           count++;
         }
       });

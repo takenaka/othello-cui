@@ -13,6 +13,7 @@ import { StoneFactory } from './model/stone';
     const othello = new Othello(board, StoneFactory, player1, player2, IO);
     othello.init();
   } catch (e) {
-    console.error(e.message);
+    const _e = e as Error;
+    console.error(_e.message);
   }
 })();

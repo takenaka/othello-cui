@@ -66,7 +66,7 @@ export const IO: IIO = class IO {
     board.state.forEach((yDirection, y) => {
       const line = [(y + 1).toString()];
       yDirection.forEach((stone, x) => {
-        if (!stone.state) {
+        if (!stone) {
           line.push('*');
           return;
         }
