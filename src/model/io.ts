@@ -1,4 +1,4 @@
-import { prompt } from '../util/prompt';
+import inquirer from 'inquirer';
 import { Coodinate, IBoard } from './board';
 
 export interface IIO {
@@ -8,13 +8,18 @@ export interface IIO {
   showBoard: (board: IBoard) => void;
 }
 
-export const IO: IIO = class IO {
-  public static message = (message: any) => {
+export class IO implements IIO {
+  private prompt: inquirer.PromptModule;
+
+  public constructor(prompt: inquirer.PromptModule) {
+    this.prompt = prompt;
+  }
+  public message = (message: any) => {
     console.log(message);
   };
 
-  public static selectBoardSize = async () => {
-    const answer = await prompt({
+  public selectBoardSize = async () => {
+    const answer = await this.prompt({
       message: 'ボードのサイズを選択してください',
       name: 'boardSize',
       type: 'list',
@@ -28,7 +33,7 @@ export const IO: IIO = class IO {
     return answer.boardSize as number;
   };
 
-  public static selectXYCoodinate = async (board: IBoard): Promise<Coodinate> => {
+  public selectXYCoodinate = async (board: IBoard): Promise<Coodinate> => {
     const choicesNumber: { name: string; value: number }[] = [];
     const choicesAlphabet: { name: string; value: number }[] = [];
     const char = 'A'.charCodeAt(0);
@@ -37,13 +42,13 @@ export const IO: IIO = class IO {
       choicesAlphabet.push({ name: String.fromCharCode(char + i), value: i });
     }
 
-    const y = await IO.selectCoodinate('y', choicesNumber);
-    const x = await IO.selectCoodinate('x', choicesAlphabet);
+    const y = await this.selectCoodinate('y', choicesNumber);
+    const x = await this.selectCoodinate('x', choicesAlphabet);
     return { y, x };
   };
 
-  private static selectCoodinate = async (direction: 'y' | 'x', choices: { name: string; value: number }[]) => {
-    const answer = await prompt({
+  private selectCoodinate = async (direction: 'y' | 'x', choices: { name: string; value: number }[]) => {
+    const answer = await this.prompt({
       message: `${direction}座標を選んでください`,
       name: direction,
       type: 'list',
@@ -53,7 +58,7 @@ export const IO: IIO = class IO {
     return answer[direction] as number;
   };
 
-  public static showBoard = (board: IBoard) => {
+  public showBoard = (board: IBoard) => {
     const message = [];
 
     let firstLine = [' '];
