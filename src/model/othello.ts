@@ -198,6 +198,6 @@ export class Othello {
     }
 
     this.io.message(`勝者は: ${winner}`);
-    this.io.message('\nおわり');
+    this.io.message('\nゲーム終了');
   };
 }
