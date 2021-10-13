@@ -73,7 +73,7 @@ export class Othello {
   };
 
   private putStone = (coodinate: Coodinate) => {
-    const flipableStones = this.getFlipableStonesCoodinate(coodinate);
+    const flipableStones = this.getFlipableStoneCoodinates(coodinate);
 
     if (flipableStones.length === 0) {
       throw new Error('ひっくり返せる石がないよ');
@@ -105,7 +105,7 @@ export class Othello {
           continue;
         }
 
-        const flipableStones = this.getFlipableStonesCoodinate({ y: i, x: j });
+        const flipableStones = this.getFlipableStoneCoodinates({ y: i, x: j });
 
         // 置く場所があればターンを実行して終了
         if (flipableStones.length > 0) {
@@ -136,11 +136,11 @@ export class Othello {
   };
 
   // 全方向を見て裏返せる石を探す
-  private getFlipableStonesCoodinate = (coodinate: Coodinate) => {
+  private getFlipableStoneCoodinates = (coodinate: Coodinate) => {
     let coodinates: Coodinate[] = [];
 
     directions.forEach(direction => {
-      const value = this.getFlipableStonesCoodinateLookAtSingleDirection(coodinate, direction);
+      const value = this.getFlipableStoneCoodinatesLookAtSingleDirection(coodinate, direction);
       coodinates = coodinates.concat(value);
     });
 
@@ -148,7 +148,7 @@ export class Othello {
   };
 
   // 一方向を見て裏返せる石を探す
-  private getFlipableStonesCoodinateLookAtSingleDirection = (cordinate: Coodinate, direction: XYDirection) => {
+  private getFlipableStoneCoodinatesLookAtSingleDirection = (cordinate: Coodinate, direction: XYDirection) => {
     const coodinates: Coodinate[] = [];
 
     for (let i = 1; i <= this.board.size; i++) {
