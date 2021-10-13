@@ -14,3 +14,13 @@ export class Player implements IPlayer {
     this.name = name;
   }
 }
+
+export interface IPlayerCreator {
+  factory: (color: StoneState, name: string) => IPlayer
+}
+
+export const PlayerCreator: IPlayerCreator = class PlayerCreator {
+  public static factory = (color: StoneState, name: string) => {
+    return new Player(color, name);
+  }
+}

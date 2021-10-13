@@ -1,6 +1,6 @@
 import { Coodinate, IBoard } from './board';
 import { IIO } from './io';
-import { IPlayer } from './player';
+import { IPlayer, IPlayerCreator } from './player';
 import { IStoneCreator } from './stone';
 
 export type Direction = 1 | -1 | 0;
@@ -31,11 +31,11 @@ export class Othello {
   private pass = 0;
   private countStone = 0;
 
-  constructor(board: IBoard, StoneCreator: IStoneCreator, player1: IPlayer, player2: IPlayer, io: IIO) {
+  constructor(board: IBoard, StoneCreator: IStoneCreator, PlayerCreator: IPlayerCreator, io: IIO) {
     this.board = board;
     this.StoneCreator = StoneCreator;
-    this.player1 = player1;
-    this.player2 = player2;
+    this.player1 = PlayerCreator.factory('black', '黒');
+    this.player2 = PlayerCreator.factory('white', '白');
     this.io = io;
 
     this.turnPlayer = this.player1;
