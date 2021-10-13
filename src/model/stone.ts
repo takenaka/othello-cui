@@ -25,11 +25,11 @@ export class Stone implements IStone {
   };
 }
 
-export interface IStoneFactory {
+export interface IStoneCreator {
   factory: (value: StoneState) => IStone;
 }
 
-export const StoneFactory: IStoneFactory = class StoneFactory {
+export const StoneCreator: IStoneCreator = class StoneCreator {
   public static factory = (value: StoneState) => {
     return new Stone(value);
   };

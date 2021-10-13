@@ -1,4 +1,4 @@
-import { IStone, IStoneFactory, StoneState } from './stone';
+import { IStone, StoneState } from './stone';
 
 export interface Coodinate {
   x: number;

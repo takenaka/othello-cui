@@ -1,7 +1,7 @@
 import { Coodinate, IBoard } from './board';
 import { IIO } from './io';
 import { IPlayer } from './player';
-import { IStoneFactory } from './stone';
+import { IStoneCreator } from './stone';
 
 export type Direction = 1 | -1 | 0;
 
@@ -23,7 +23,7 @@ export const directions: XYDirection[] = [
 
 export class Othello {
   private readonly board: IBoard;
-  private readonly stoneFactory: IStoneFactory;
+  private readonly StoneCreator: IStoneCreator;
   private readonly player1: IPlayer;
   private readonly player2: IPlayer;
   private readonly io: IIO;
@@ -31,9 +31,9 @@ export class Othello {
   private pass = 0;
   private countStone = 0;
 
-  constructor(board: IBoard, stoneFactory: IStoneFactory, player1: IPlayer, player2: IPlayer, io: IIO) {
+  constructor(board: IBoard, StoneCreator: IStoneCreator, player1: IPlayer, player2: IPlayer, io: IIO) {
     this.board = board;
-    this.stoneFactory = stoneFactory;
+    this.StoneCreator = StoneCreator;
     this.player1 = player1;
     this.player2 = player2;
     this.io = io;
@@ -51,9 +51,9 @@ export class Othello {
       for (let y = 0; y < 2; y++) {
         for (let x = 0; x < 2; x++) {
           if (x === y) {
-            this.board.putStone({ y: y + base, x: x + base }, this.stoneFactory.factory('black'));
+            this.board.putStone({ y: y + base, x: x + base }, this.StoneCreator.factory('black'));
           } else {
-            this.board.putStone({ y: y + base, x: x + base }, this.stoneFactory.factory('white'));
+            this.board.putStone({ y: y + base, x: x + base }, this.StoneCreator.factory('white'));
           }
         }
       }
@@ -79,7 +79,7 @@ export class Othello {
       throw new Error('ひっくり返せる石がないよ');
     }
 
-    this.board.putStone(coodinate, this.stoneFactory.factory(this.turnPlayer.color));
+    this.board.putStone(coodinate, this.StoneCreator.factory(this.turnPlayer.color));
     flipableStones.forEach(flipableStone => {
       const stone = this.board.getStone(flipableStone);
       stone?.flip();
