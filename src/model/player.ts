@@ -19,8 +19,8 @@ export interface IPlayerCreator {
   factory: (color: StoneState, name: string) => IPlayer
 }
 
-export const PlayerCreator: IPlayerCreator = class PlayerCreator {
-  public static factory = (color: StoneState, name: string) => {
+export class PlayerCreator implements IPlayerCreator {
+  public factory = (color: StoneState, name: string) => {
     return new Player(color, name);
   }
 }

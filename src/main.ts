@@ -10,7 +10,7 @@ import { StoneCreator } from './model/stone';
     const board = new Board();
     const io = new IO(prompt);
 
-    const othello = new Othello(board, StoneCreator, PlayerCreator, io);
+    const othello = new Othello(board, new StoneCreator, new PlayerCreator, io);
     othello.init();
   } catch (e) {
     const _e = e as Error;
