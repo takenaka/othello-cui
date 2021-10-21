@@ -40,7 +40,7 @@ export class Othello {
     this.turnPlayer = this.player1;
   }
 
-  public init = async () => {
+  public start = async () => {
     try {
       const answer = await this.io.selectBoardSize();
       this.board.init(answer);
@@ -60,8 +60,9 @@ export class Othello {
       this.io.message(`先行は${this.turnPlayer.name}です`);
 
       // 2連続パスか盤面が一杯になるまで
-      while (this.pass < 2 && !this.board.isFull) {
-        await this.turn();
+      while (this.pass < 2 && !this.board.isFull()) {
+        await this.playTurn();
+        this.changeTurn();
       }
 
       this.end();
@@ -89,7 +90,7 @@ export class Othello {
     this.turnPlayer = this.turnPlayer === this.player1 ? this.player2 : this.player1;
   };
 
-  private turn = async () => {
+  private playTurn = async () => {
     this.io.showBoard(this.board);
     this.io.message(`${this.turnPlayer.name}の番`);
 
@@ -117,7 +118,6 @@ export class Othello {
               console.log(`\n${_e.message}\n`);
             }
           }
-          this.changeTurn();
           return;
         }
       }
@@ -127,7 +127,6 @@ export class Othello {
     this.pass++;
 
     this.io.message(`${this.turnPlayer.name}は置けないのでパス`);
-    this.changeTurn();
   };
 
   // 全方向を見て裏返せる石を探す

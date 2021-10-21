@@ -11,7 +11,7 @@ import { StoneCreator } from './model/stone';
     const io = new IO(prompt);
 
     const othello = new Othello(board, new StoneCreator, new PlayerCreator, io);
-    othello.init();
+    othello.start();
   } catch (e) {
     const _e = e as Error;
     console.error(_e.message);
