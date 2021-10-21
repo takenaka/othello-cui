@@ -29,7 +29,6 @@ export class Othello {
   private readonly io: IIO;
   private turnPlayer: IPlayer;
   private pass = 0;
-  private countStone = 0;
 
   constructor(board: IBoard, stoneCreator: IStoneCreator, playerCreator: IPlayerCreator, io: IIO) {
     this.board = board;
@@ -61,7 +60,7 @@ export class Othello {
       this.io.message(`先行は${this.turnPlayer.name}です`);
 
       // 2連続パスか盤面が一杯になるまで
-      while (this.pass < 2 && this.countStone < this.board.size ** 2) {
+      while (this.pass < 2 && !this.board.isFull) {
         await this.turn();
       }
 
@@ -84,10 +83,6 @@ export class Othello {
       const stone = this.board.getStone(flipableStone);
       stone?.flip();
     });
-
-    const countWhiteStone = this.board.countStone('white');
-    const countBlackStone = this.board.countStone('black');
-    this.countStone = countWhiteStone + countBlackStone;
   };
 
   private changeTurn = () => {

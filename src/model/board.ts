@@ -12,6 +12,7 @@ export interface IBoard {
   canPutStone: (coodinate: Coodinate) => boolean;
   getStone: (coodinate: Coodinate) => IStone | null;
   countStone: (state: StoneState) => number;
+  isFull: () => boolean;
   init: (number: number) => void;
 }
 
@@ -94,4 +95,12 @@ export class Board implements IBoard {
 
     return count;
   };
+
+  public isFull = () => {
+    if (this.countStone('white') + this.countStone('black') < this.size ** 2) {
+      return false
+    }
+
+    return true;
+  }
 }
