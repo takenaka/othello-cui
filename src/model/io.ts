@@ -2,7 +2,7 @@ import inquirer from 'inquirer';
 import { Coodinate, IBoard } from './board';
 
 export interface IIO {
-  message: (message: any) => void;
+  showMessage: (message: any) => void;
   selectBoardSize: () => Promise<number>;
   selectXYCoodinate: (board: IBoard) => Promise<Coodinate>;
   showBoard: (board: IBoard) => void;
@@ -14,7 +14,7 @@ export class IO implements IIO {
   public constructor(prompt: inquirer.PromptModule) {
     this.prompt = prompt;
   }
-  public message = (message: any) => {
+  public showMessage = (message: any) => {
     console.log(message);
   };
 

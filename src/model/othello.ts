@@ -10,7 +10,7 @@ export interface XYDirection {
   x: Direction;
 }
 
-export const directions: XYDirection[] = [
+const directions: XYDirection[] = [
   { y: -1, x: 0 },
   { y: -1, x: 1 },
   { y: 0, x: 1 },
@@ -27,8 +27,8 @@ export class Othello {
   private readonly player1: IPlayer;
   private readonly player2: IPlayer;
   private readonly io: IIO;
-  private turnPlayer: IPlayer;
-  private pass = 0;
+  private currentPlayer: IPlayer;
+  private passedCount = 0;
 
   constructor(board: IBoard, stoneCreator: IStoneCreator, playerCreator: IPlayerCreator, io: IIO) {
     this.board = board;
@@ -37,30 +37,19 @@ export class Othello {
     this.player2 = playerCreator.factory('white', '白');
     this.io = io;
 
-    this.turnPlayer = this.player1;
+    this.currentPlayer = this.player1;
   }
 
   public start = async () => {
     try {
-      const answer = await this.io.selectBoardSize();
-      this.board.init(answer);
+      // 初期盤面の生成
+      const size = await this.io.selectBoardSize();
+      this.setInitialBoard(size);
 
-      const base = answer / 2 - 1;
-
-      for (let y = 0; y < 2; y++) {
-        for (let x = 0; x < 2; x++) {
-          if (x === y) {
-            this.board.putStone({ y: y + base, x: x + base }, this.stoneCreator.factory('black'));
-          } else {
-            this.board.putStone({ y: y + base, x: x + base }, this.stoneCreator.factory('white'));
-          }
-        }
-      }
-
-      this.io.message(`先行は${this.turnPlayer.name}です`);
+      this.io.showMessage(`先行は${this.currentPlayer.name}です`);
 
       // 2連続パスか盤面が一杯になるまで
-      while (this.pass < 2 && !this.board.isFull()) {
+      while (this.passedCount < 2 && !this.board.isFull()) {
         await this.playTurn();
         this.changeTurn();
       }
@@ -68,65 +57,87 @@ export class Othello {
       this.end();
     } catch (e) {
       const _e = e as Error;
-      this.io.message(_e.message);
+      this.io.showMessage(_e.message);
+    }
+  };
+
+  private setInitialBoard = (size: number) => {
+    this.board.init(size);
+
+    const base = size / 2 - 1;
+
+    for (let y = 0; y < 2; y++) {
+      for (let x = 0; x < 2; x++) {
+        if (x === y) {
+          this.board.putStone({ y: y + base, x: x + base }, this.stoneCreator.factory('black'));
+        } else {
+          this.board.putStone({ y: y + base, x: x + base }, this.stoneCreator.factory('white'));
+        }
+      }
     }
   };
 
   private putStone = (coodinate: Coodinate) => {
-    const flipableStones = this.getFlipableStoneCoodinates(coodinate);
+    const flippableStones = this.getFlipableStoneCoodinates(coodinate);
 
-    if (flipableStones.length === 0) {
+    if (flippableStones.length === 0) {
       throw new Error('ひっくり返せる石がないよ');
     }
 
-    this.board.putStone(coodinate, this.stoneCreator.factory(this.turnPlayer.color));
-    flipableStones.forEach(flipableStone => {
+    this.board.putStone(coodinate, this.stoneCreator.factory(this.currentPlayer.color));
+    flippableStones.forEach(flipableStone => {
       const stone = this.board.getStone(flipableStone);
       stone?.flip();
     });
   };
 
   private changeTurn = () => {
-    this.turnPlayer = this.turnPlayer === this.player1 ? this.player2 : this.player1;
+    this.currentPlayer = this.currentPlayer === this.player1 ? this.player2 : this.player1;
   };
 
   private playTurn = async () => {
     this.io.showBoard(this.board);
-    this.io.message(`${this.turnPlayer.name}の番`);
+    this.io.showMessage(`${this.currentPlayer.name}の番`);
 
+    if (!this.canPutStone()) {
+      // 置く場所がない場合
+      this.passedCount++;
+
+      this.io.showMessage(`${this.currentPlayer.name}は置けないのでパス`);
+      return;
+    }
+
+    this.passedCount = 0;
+
+    // 置けるまで聞く
+    while (true) {
+      try {
+        const coodinate = await this.io.selectXYCoodinate(this.board);
+        this.putStone(coodinate);
+        break;
+      } catch (e) {
+        const _e = e as Error;
+        console.log(`\n${_e.message}\n`);
+      }
+    }
+  };
+
+  // 置ける場所があるかどうか
+  private canPutStone = () => {
     // 全部のマスを調べて置ける場所があるかどうか調べる
     for (let i = 0; i < this.board.size; i++) {
       for (let j = 0; j < this.board.size; j++) {
-        if (!this.board.canPutStone({ y: i, x: j })) {
+        if (!this.board.isEmpty({ y: i, x: j })) {
           continue;
         }
-
-        const flipableStones = this.getFlipableStoneCoodinates({ y: i, x: j });
-
-        // 置く場所があればターンを実行して終了
-        if (flipableStones.length > 0) {
-          this.pass = 0;
-
-          // 置けるまで聞く
-          while (true) {
-            const coodinate = await this.io.selectXYCoodinate(this.board);
-            try {
-              this.putStone(coodinate);
-              break;
-            } catch (e) {
-              const _e = e as Error;
-              console.log(`\n${_e.message}\n`);
-            }
-          }
-          return;
+        const flippableStones = this.getFlipableStoneCoodinates({ y: i, x: j });
+        if (flippableStones.length > 0) {
+          return true;
         }
       }
     }
 
-    // 置く場所がない場合
-    this.pass++;
-
-    this.io.message(`${this.turnPlayer.name}は置けないのでパス`);
+    return false;
   };
 
   // 全方向を見て裏返せる石を探す
@@ -163,7 +174,7 @@ export class Othello {
       }
 
       //自分の石があったならcoodinatesを返す
-      if (boardMapCoordinate.state === this.turnPlayer.color) {
+      if (boardMapCoordinate.state === this.currentPlayer.color) {
         return coodinates;
       }
 
@@ -183,15 +194,15 @@ export class Othello {
     const player1Count = this.board.countStone(this.player1.color);
     const player2Count = this.board.countStone(this.player2.color);
 
-    this.io.message(`${this.player1.name}: ${player1Count}`);
-    this.io.message(`${this.player2.name}: ${player2Count}`);
+    this.io.showMessage(`${this.player1.name}: ${player1Count}`);
+    this.io.showMessage(`${this.player2.name}: ${player2Count}`);
 
     let winner = player1Count > player2Count ? this.player1.name : this.player2.name;
     if (player1Count === player2Count) {
       winner = 'なし';
     }
 
-    this.io.message(`勝者は: ${winner}`);
-    this.io.message('\nゲーム終了');
+    this.io.showMessage(`勝者は: ${winner}`);
+    this.io.showMessage('\nゲーム終了');
   };
 }

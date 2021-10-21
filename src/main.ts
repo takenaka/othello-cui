@@ -7,10 +7,7 @@ import { StoneCreator } from './model/stone';
 
 (async () => {
   try {
-    const board = new Board();
-    const io = new IO(prompt);
-
-    const othello = new Othello(board, new StoneCreator, new PlayerCreator, io);
+    const othello = new Othello(new Board(), new StoneCreator(), new PlayerCreator(), new IO(prompt));
     othello.start();
   } catch (e) {
     const _e = e as Error;

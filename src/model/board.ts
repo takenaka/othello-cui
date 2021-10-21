@@ -9,7 +9,7 @@ export interface IBoard {
   size: number;
   state: Array<IStone | null>[];
   putStone: (coodinate: Coodinate, stone: IStone) => void;
-  canPutStone: (coodinate: Coodinate) => boolean;
+  isEmpty: (coodinate: Coodinate) => boolean;
   getStone: (coodinate: Coodinate) => IStone | null;
   countStone: (state: StoneState) => number;
   isFull: () => boolean;
@@ -54,12 +54,12 @@ export class Board implements IBoard {
     return false;
   };
 
-  public canPutStone = (coodinate: Coodinate) => {
-    return this.existSpace(coodinate) && !Boolean(this._state[coodinate.y][coodinate.x]);
+  public isEmpty = (coodinate: Coodinate) => {
+    return this.existSquare(coodinate) && !Boolean(this._state[coodinate.y][coodinate.x]);
   };
 
-  private existSpace = (coodinate: Coodinate) => {
-    // 範囲外
+  // マス目が存在するか
+  private existSquare = (coodinate: Coodinate) => {
     if (this._state[coodinate.y] === undefined || this._state[coodinate.y][coodinate.x] === undefined) {
       return false;
     }
@@ -68,7 +68,7 @@ export class Board implements IBoard {
   };
 
   public putStone = (coodinate: Coodinate, stone: IStone) => {
-    if (!this.existSpace(coodinate) || !this.canPutStone(coodinate)) {
+    if (!this.existSquare(coodinate) || !this.isEmpty(coodinate)) {
       throw new Error('置けないよ');
     }
 
@@ -76,7 +76,7 @@ export class Board implements IBoard {
   };
 
   public getStone = (coodinate: Coodinate) => {
-    if (!this.existSpace(coodinate)) {
+    if (!this.existSquare(coodinate)) {
       throw new Error('範囲外だよ');
     }
 
@@ -98,9 +98,9 @@ export class Board implements IBoard {
 
   public isFull = () => {
     if (this.countStone('white') + this.countStone('black') < this.size ** 2) {
-      return false
+      return false;
     }
 
     return true;
-  }
+  };
 }
