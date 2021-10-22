@@ -55,11 +55,11 @@ export class Board implements IBoard {
   };
 
   public isEmpty = (coodinate: Coodinate) => {
-    return this.existSquare(coodinate) && !Boolean(this._state[coodinate.y][coodinate.x]);
+    return this.existsSquare(coodinate) && !Boolean(this._state[coodinate.y][coodinate.x]);
   };
 
   // マス目が存在するか
-  private existSquare = (coodinate: Coodinate) => {
+  private existsSquare = (coodinate: Coodinate) => {
     if (this._state[coodinate.y] === undefined || this._state[coodinate.y][coodinate.x] === undefined) {
       return false;
     }
@@ -68,7 +68,7 @@ export class Board implements IBoard {
   };
 
   public putStone = (coodinate: Coodinate, stone: IStone) => {
-    if (!this.existSquare(coodinate) || !this.isEmpty(coodinate)) {
+    if (!this.existsSquare(coodinate) || !this.isEmpty(coodinate)) {
       throw new Error('置けないよ');
     }
 
@@ -76,7 +76,7 @@ export class Board implements IBoard {
   };
 
   public getStone = (coodinate: Coodinate) => {
-    if (!this.existSquare(coodinate)) {
+    if (!this.existsSquare(coodinate)) {
       throw new Error('範囲外だよ');
     }
 
