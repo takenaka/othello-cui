@@ -58,6 +58,7 @@ export class Othello {
     } catch (e) {
       const _e = e as Error;
       this.io.showMessage(_e.message);
+      throw e;
     }
   };
 
