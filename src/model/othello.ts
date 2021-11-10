@@ -3,23 +3,7 @@ import { IIO } from './io';
 import { IPlayer, IPlayerCreator } from './player';
 import { IStoneCreator } from './stone';
 
-export type Direction = 1 | -1 | 0;
-
-export interface XYDirection {
-  y: Direction;
-  x: Direction;
-}
-
-const directions: XYDirection[] = [
-  { y: -1, x: 0 },
-  { y: -1, x: 1 },
-  { y: 0, x: 1 },
-  { y: 1, x: 1 },
-  { y: 1, x: 0 },
-  { y: 1, x: -1 },
-  { y: 0, x: -1 },
-  { y: -1, x: -1 },
-];
+type Direction = -1 | 0 | 1;
 
 export class Othello {
   private readonly board: IBoard;
@@ -145,16 +129,21 @@ export class Othello {
   private getFlipableStoneCoodinates = (coodinate: Coodinate) => {
     let coodinates: Coodinate[] = [];
 
-    directions.forEach(direction => {
-      const value = this.getFlipableStoneCoodinatesLookAtSingleDirection(coodinate, direction);
-      coodinates = coodinates.concat(value);
-    });
+    for (let y = -1; y <= 1; y++) {
+      for (let x = -1; x <= 1; x++) {
+        const flippableStones = this.getFlipableStoneCoodinatesInDirection(coodinate, {
+          x: x as Direction,
+          y: y as Direction,
+        });
+        coodinates = coodinates.concat(flippableStones);
+      }
+    }
 
     return coodinates;
   };
 
   // 一方向を見て裏返せる石を探す
-  private getFlipableStoneCoodinatesLookAtSingleDirection = (cordinate: Coodinate, direction: XYDirection) => {
+  private getFlipableStoneCoodinatesInDirection = (cordinate: Coodinate, direction: { x: Direction; y: Direction }) => {
     const coodinates: Coodinate[] = [];
 
     for (let i = 1; i <= this.board.size; i++) {
@@ -162,28 +151,27 @@ export class Othello {
       const c = cordinate.x + direction.x * i;
 
       try {
-        this.board.getStone({ y: r, x: c });
+        const boardMapCoordinate = this.board.getStone({ y: r, x: c });
+
+        //空マスなら終了
+        if (!boardMapCoordinate) {
+          return [];
+        }
+
+        //自分の石があったならcoodinatesを返す
+        if (boardMapCoordinate.state === this.currentPlayer.color) {
+          return coodinates;
+        }
+
+        //相手の石があればその座標をcoodinatesにプッシュする。
+        coodinates.push({
+          y: r,
+          x: c,
+        });
       } catch {
+        // 範囲外なら終了
         return [];
       }
-
-      const boardMapCoordinate = this.board.getStone({ y: r, x: c });
-
-      //空マスなら空の配列を返す。
-      if (!boardMapCoordinate) {
-        return [];
-      }
-
-      //自分の石があったならcoodinatesを返す
-      if (boardMapCoordinate.state === this.currentPlayer.color) {
-        return coodinates;
-      }
-
-      //相手の石があればその座標をcoodinatesにプッシュする。
-      coodinates.push({
-        y: r,
-        x: c,
-      });
     }
 
     return coodinates;
